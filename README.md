@@ -91,7 +91,7 @@ TASK_LISTS = {
 }
 ```
 
-If a space is not in `TASK_LISTS`, the watcher auto-detects a list named "Reuniões" or "Meeting" via the ClickUp API.
+If a space is not in `TASK_LISTS`, the watcher auto-detects a list named "Reunioes" or "Meeting" via the ClickUp API.
 
 ### 4. Configure meeting detection
 
@@ -127,9 +127,9 @@ Register-ScheduledTask -TaskName "MeetingWatcher" -Action $action -Trigger $trig
 
 ## Excel output
 
-Each processed meeting generates a `.xlsx` file with 20 columns (A–T).
+Each processed meeting generates a `.xlsx` file with 20 columns (A-T).
 
-### Use Case columns (A–O) — filled automatically
+### Use Case columns (A-O) — filled automatically
 
 | Col | Column | Description |
 |-----|--------|-------------|
@@ -137,30 +137,30 @@ Each processed meeting generates a `.xlsx` file with 20 columns (A–T).
 | B | Grupo | Category of the use case |
 | C | Caso de Uso | Short name |
 | D | User Story | As X, I want Y, so that Z |
-| E | Detalhes / Solução | Technical context and proposed solution |
-| F | Critérios de Aceite | Given/When/Then acceptance criteria |
-| G | Sugestão Técnica | HubSpot technical recommendation (yellow `#FFF2CC`) |
-| H | Hub / Licença | Required HubSpot Hub + license tier (green `#E2EFDA`) |
-| I | Status | Dropdown: A fazer / Em andamento / Concluído / Backlog / Impedido |
-| J | Responsável | Assigned person |
+| E | Detalhes / Solucao | Technical context and proposed solution |
+| F | Criterios de Aceite | Given/When/Then acceptance criteria |
+| G | Sugestao Tecnica | HubSpot technical recommendation (yellow #FFF2CC) |
+| H | Hub / Licenca | Required HubSpot Hub + license tier (green #E2EFDA) |
+| I | Status | Dropdown: A fazer / Em andamento / Concluido / Backlog / Impedido |
+| J | Responsavel | Assigned person |
 | K | Shirt | Dropdown: S / M / L / XL |
 | L | Horas | Estimated hours (e.g. 8h) |
 | M | MoSCoW | Dropdown: Must / Should / Could / Won't |
-| N | Início | Start date (DD/MM) |
+| N | Inicio | Start date (DD/MM) |
 | O | Fim | End date (DD/MM) |
 
 Columns G and H are filled automatically via Gemini with HubSpot technical recommendations.
 
-### Task columns (P–T) — filled manually
+### Task columns (P-T) — filled manually
 
-These columns are always blank when generated. Use them to track the corresponding ClickUp task. Header color: dark slate `#44546A`.
+These columns are always blank when generated. Use them to track the corresponding ClickUp task. Header color: dark slate #44546A.
 
 | Col | Column | Description |
 |-----|--------|-------------|
 | P | Lista ou ID | ClickUp list name or task ID |
-| Q | Título | Task title |
-| R | Descrição (contexto) | Task description or context notes |
-| S | Responsável (Assignee) | Person assigned to the ClickUp task |
+| Q | Titulo | Task title |
+| R | Descricao (contexto) | Task description or context notes |
+| S | Responsavel (Assignee) | Person assigned to the ClickUp task |
 | T | Status (tarefa) | Current status of the ClickUp task |
 
 ---
@@ -173,7 +173,7 @@ If `gemini-2.5-flash` is unavailable (503/429), the watcher automatically retrie
 2. `gemini-2.5-flash-lite`
 3. `gemini-3-flash-preview`
 
-Rate limit (429) and service unavailability (503) errors trigger exponential backoff (4s → 8s → 16s) before moving to the next model.
+Rate limit (429) and service unavailability (503) errors trigger exponential backoff (4s -> 8s -> 16s) before moving to the next model.
 
 ---
 
