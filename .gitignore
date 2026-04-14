@@ -1,0 +1,17 @@
+# Segredos — NUNCA commitar
+.env
+
+# Estado interno — específico por instalação
+processed_meetings.json
+watcher.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# OS
+.DS_Store
+Thumbs.db
