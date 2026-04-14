@@ -68,7 +68,7 @@ Monitora docs do ClickUp em background. Quando detecta uma nova reunião, aciona
 
 O watcher gerou automaticamente os casos de uso, consultou recomendações técnicas por UC e criou a tarefa com Excel anexado em menos de 3 minutos.
 
-**Tarefa gerada:** [Teste - Vendedores WhatsApp HubSpot v3 — ClickUp](https://app.clickup.com/t/86agua0db)
+**Tarefa gerada:** [Teste - Projetista Jarbas Demo — ClickUp](https://app.clickup.com/t/86agweagc)
 
 Exemplo de UC gerado para essa entrada:
 
