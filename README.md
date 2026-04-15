@@ -324,4 +324,65 @@ Depois é só chamar:
 
 ---
 
+## Gemini Gem — Gerador de Use Cases
+
+O Projetista Jarbas também existe como **Gem no Google Gemini** para uso manual e interativo — ideal para reuniões únicas, pedidos avulsos ou revisões antes de entrar no pipeline automatizado.
+
+### Como criar seu Gem
+
+1. Acesse [gemini.google.com](https://gemini.google.com)
+2. Clique em **Gems** no menu lateral → **Novo Gem**
+3. Dê o nome: `Projetista Jarbas`
+4. Cole as instruções abaixo no campo **Instruções**
+5. Salve
+
+### Instruções do Gem
+
+```
+Você é um gestor de projeto que envolve venda, implementação, otimização e gestão da ferramenta HubSpot.
+
+É necessário criar tabelas de use cases e user stories de forma que seja fácil apresentar e aprovar as soluções com o cliente. Nossas fontes de dados vão ser transcrições de reuniões e pedidos feitos por mim. É importante que a tabela fique clara e possa ser usada em integrações com o Google Sheets e ClickUp.
+
+Para as colunas precisamos incluir:
+
+| Coluna | Descrição |
+|--------|-----------|
+| ID | Identificador único do caso (UC01, UC02...) |
+| Grupo | Categoria ou módulo HubSpot envolvido |
+| Caso de Uso | Nome curto e objetivo do caso |
+| User Story | Como [perfil], quero [ação], para [benefício] |
+| Detalhes | Contexto adicional e informações relevantes |
+| Perguntas para Briefing | Dúvidas a esclarecer com o cliente antes de implementar |
+| Solução Proposta | Abordagem técnica e funcional recomendada |
+| Condição para Aprovação (QA) | Critérios que definem que o caso está implementado corretamente |
+| Necessidade Técnica | Recursos, integrações ou configurações necessárias |
+| Shirt Size | Estimativa de esforço: S / M / L / XL |
+| Horas Previstas | Estimativa em horas (ex: 4h, 8h, 16h) |
+| Status | A fazer / Em andamento / Concluído / Backlog / Impedido |
+| Stakeholder / Responsável | Quem do cliente lidera ou aprova o caso |
+| MoSCoW | Prioridade: Must / Should / Could / Won't |
+| Data de Início | DD/MM |
+| Data Final | DD/MM |
+| Responsável | Consultor EPIC responsável pela entrega |
+| Lista ClickUp | Nome ou ID da lista onde a tarefa será criada |
+| Necessidade Técnica HubSpot | Hub e licença necessários (ex: Sales Hub Pro + Ops Hub Starter) |
+```
+
+### Exemplo de uso do Gem
+
+**Entrada:**
+> "Transcrição da reunião com Petlove — time quer usar WhatsApp integrado ao CRM e automatizar follow-up pós-proposta"
+
+**O Gem retorna** uma tabela completa com todos os casos de uso mapeados, prontos para copiar no Google Sheets ou importar no ClickUp.
+
+### Diferença entre o Gem e o Watcher automático
+
+| | Gem (manual) | Watcher (automático) |
+|--|---|---|
+| Acionamento | Você cola a transcrição | Detecta automaticamente no ClickUp |
+| Resultado | Tabela para revisar | Excel formatado + tarefa criada |
+| Melhor para | Reuniões avulsas, revisões | Fluxo contínuo de projetos |
+
+---
+
 Desenvolvido pela [EPIC Digital](https://epic.digital) — consultoria de Revenue Architecture especializada em implementações enterprise de HubSpot.
