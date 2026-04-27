@@ -57,7 +57,7 @@ MEETING_KEYWORDS = [
 
 # ─── Constantes ───────────────────────────────────────────────────────────────
 CLICKUP_PARENT_TYPE_SPACE = 4
-STATUS_OPTIONS = ["A fazer", "Em andamento", "Concluído", "Backlog", "Impedido"]
+STATUS_OPTIONS = ["OPEN", "BACKLOG", "PENDING", "WAITING INFORMATION", "IN PROGRESS", "INTERNAL REVIEW", "CLIENT REVIEW", "CANCELED"]
 MOSCOW_OPTIONS = ["Must", "Should", "Could", "Won't"]
 SHIRT_SIZES    = ["S", "M", "L", "XL"]
 GEMINI_CONTENT_LIMIT = 15000
@@ -464,7 +464,7 @@ def create_subtasks(task_id, list_id, use_cases):
         payload = {
             "name": f"{uc['id']} — {uc.get('caso_de_uso', '?')}",
             "description": desc,
-            "status": "to do",
+            "status": "OPEN",
             "parent": task_id,
         }
         if CLICKUP_USER_ID:
@@ -552,7 +552,7 @@ def process_meeting(doc):
     task_payload = {
         "name": name,
         "description": "\n".join(desc_lines),
-        "status": "to do",
+        "status": "OPEN",
         "priority": 2,
         "notify_all": False,
     }

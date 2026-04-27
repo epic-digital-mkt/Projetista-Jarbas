@@ -220,7 +220,7 @@ O Excel ainda pode ser gerado manualmente via `test_run.py` com **21 colunas (A�
 | F | Critérios de Aceite | Dado / Quando / Então em bullet points |
 | G | **Sugestão Técnica** | Módulo/ferramenta HubSpot recomendado *(amarelo)* |
 | H | **Hub / Licença** | Ex: Sales Hub Pro + Ops Hub Starter *(verde)* |
-| I | Status | Dropdown: A fazer / Em andamento / Concluído / Backlog / Impedido |
+| I | Status | Dropdown: OPEN / BACKLOG / PENDING / WAITING INFORMATION / IN PROGRESS / INTERNAL REVIEW / CLIENT REVIEW / CANCELED |
 | J | Responsável | Nome do responsável |
 | K | Shirt | Dropdown: S / M / L / XL |
 | L | Horas | Estimativa (ex: 8h, 16h) |
@@ -395,7 +395,7 @@ Para as colunas precisamos incluir:
 | Necessidade Técnica | Recursos, integrações ou configurações necessárias |
 | Shirt Size | Estimativa de esforço: S / M / L / XL |
 | Horas Previstas | Estimativa em horas (ex: 4h, 8h, 16h) |
-| Status | A fazer / Em andamento / Concluído / Backlog / Impedido |
+| Status | OPEN / BACKLOG / PENDING / WAITING INFORMATION / IN PROGRESS / INTERNAL REVIEW / CLIENT REVIEW / CANCELED |
 | Stakeholder / Responsável | Quem do cliente lidera ou aprova o caso |
 | MoSCoW | Prioridade: Must / Should / Could / Won't |
 | Data de Início | DD/MM |
