@@ -1,8 +1,8 @@
 # Projetista Jarbas — Meeting Watcher
 
-> **Transforma notas de reunião em Use Cases estruturados, planilha Excel formatada e tarefa no ClickUp — de forma 100% autônoma.**
+> **Transforma notas de reunião em Use Cases estruturados, cria uma tarefa no ClickUp com subtarefas por UC — de forma 100% autônoma.**
 
-Monitora docs do ClickUp em background. Quando detecta uma nova reunião, aciona o Gemini AI para gerar casos de uso, consulta recomendações técnicas de HubSpot por UC e entrega tudo organizado: Excel com 20 colunas + tarefa criada com o arquivo já anexado.
+Monitora docs do ClickUp em background. Quando detecta uma nova reunião, aciona o Gemini AI para gerar casos de uso, consulta recomendações técnicas de HubSpot por UC em paralelo e entrega tudo organizado: tarefa principal com o nome da reunião + uma subtarefa por Use Case, cada uma com user story, critérios, sugestão técnica e sprint.
 
 ---
 
@@ -13,8 +13,8 @@ Monitora docs do ClickUp em background. Quando detecta uma nova reunião, aciona
 | Analisa a reunião manualmente | Gemini lê e estrutura automaticamente |
 | Cria User Stories do zero | UC, User Story e Critérios gerados via AI |
 | Consulta especialista HubSpot | Recomendação técnica por UC em paralelo |
-| Formata planilha à mão | Excel com 20 colunas, dropdown e cores prontos |
-| Cria tarefa e anexa arquivo | Tarefa criada e Excel anexado automaticamente |
+| Cria subtarefas manualmente | Subtarefa por UC criada automaticamente no ClickUp |
+| Controla sprint manualmente | Campo Sprint incluso em cada subtarefa e no Excel |
 | Verifica a cada reunião | Roda a cada hora via Task Scheduler |
 
 ---
@@ -45,18 +45,19 @@ Monitora docs do ClickUp em background. Quando detecta uma nova reunião, aciona
         |
         v
   ┌─────────────────────────────────────┐
-  │  Excel (.xlsx) — 20 colunas         │
-  │  A-O: preenchido automaticamente    │
-  │  P-T: colunas em branco p/ gestão   │
+  │  ClickUp Task (nome da reunião)     │
+  │  - Tarefa principal = nome doc      │
+  │  - Índice de UCs na descrição       │
+  │  - Assignee + due date automáticos  │
   └─────────────────────────────────────┘
         |
-        v
+        v  (uma subtarefa por UC)
   ┌─────────────────────────────────────┐
-  │  ClickUp Task                       │
-  │  - Nome: "[Reunião] - Use Cases"    │
-  │  - Excel anexado                    │
-  │  - Assignee configurável            │
-  │  - Due date extraído do nome        │
+  │  Subtarefas por Use Case            │
+  │  - Nome: UC01 — Caso de Uso         │
+  │  - Corpo: user story + critérios    │
+  │  - Sugestão técnica + Hub/Licença   │
+  │  - Shirt, Horas, MoSCoW, Sprint     │
   └─────────────────────────────────────┘
 ```
 
@@ -147,6 +148,25 @@ MEETING_KEYWORDS = ["weekly", "discovery", "pds", "alinhamento",
 
 ---
 
+## Workflow após alterações no código
+
+Sempre que modificar `meeting_watcher.py` ou qualquer outro arquivo:
+
+```bash
+# 1. Copiar alterações para o repositório limpo (sem secrets)
+#    Copie manualmente ou use um script de sync — nunca copie o .env
+
+# 2. Commitar e subir para o GitHub
+cd projetista-jarbas
+git add meeting_watcher.py README.md   # adicione os arquivos alterados
+git commit -m "descrição da mudança"
+git push origin main
+```
+
+> **Importante:** Nunca inclua o `.env`, `processed_meetings.json` ou `watcher.log` no commit. Esses arquivos estão no `.gitignore`.
+
+---
+
 ## Executando
 
 ### Rodar manualmente
@@ -168,9 +188,25 @@ Register-ScheduledTask -TaskName "MeetingWatcher" -Action $action -Trigger $trig
 
 ---
 
-## Planilha Excel gerada
+## Subtarefas no ClickUp
 
-Cada reunião gera um `.xlsx` com **20 colunas (A–T)** formatadas.
+Cada Use Case vira uma subtarefa dentro da tarefa principal. O corpo da subtarefa contém:
+
+| Campo | Conteúdo |
+|-------|----------|
+| **User Story** | Como [perfil], quero [ação], para [benefício] |
+| **Detalhes** | Contexto técnico e solução proposta |
+| **Critérios de Aceite** | Dado / Quando / Então |
+| **Sugestão Técnica** | Módulo/ferramenta HubSpot recomendado |
+| **Hub / Licença** | Ex: Sales Hub Pro + Ops Hub Starter |
+| **Shirt / Horas / MoSCoW** | Tamanho, estimativa e prioridade |
+| **Sprint** | Preenchido manualmente após criação |
+
+---
+
+## Planilha Excel (uso manual)
+
+O Excel ainda pode ser gerado manualmente via `test_run.py` com **21 colunas (A–U)** formatadas.
 
 ### Colunas A–O — preenchidas automaticamente pelo Gemini
 
@@ -194,7 +230,7 @@ Cada reunião gera um `.xlsx` com **20 colunas (A–T)** formatadas.
 
 > Colunas G e H são preenchidas em paralelo — até 5 UCs simultâneos via `ThreadPoolExecutor`.
 
-### Colunas P–T — em branco para gestão manual
+### Colunas P–U — em branco para gestão manual
 
 Cabeçalho em cinza-azulado `#44546A` para distinguir visualmente.
 
@@ -205,6 +241,7 @@ Cabeçalho em cinza-azulado `#44546A` para distinguir visualmente.
 | R | Descrição (contexto) | Contexto ou observações adicionais |
 | S | Responsável (Assignee) | Pessoa atribuída à tarefa |
 | T | Status (tarefa) | Status atual no ClickUp |
+| U | **Sprint** | Sprint atribuído ao UC |
 
 ---
 

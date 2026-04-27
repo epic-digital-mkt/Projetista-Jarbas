@@ -325,7 +325,7 @@ def create_excel(meeting_name, use_cases_data, output_path):
         (2, f"Gerado automaticamente em {datetime.now().strftime('%d/%m/%Y %H:%M')}", 16,
          {"italic": True, "color": "1F4E79", "size": 10}, None),
     ]:
-        ws.merge_cells(f"A{row}:T{row}")
+        ws.merge_cells(f"A{row}:U{row}")
         c = ws[f"A{row}"]
         c.value = val
         c.font = Font(name="Calibri", **font_kwargs)
@@ -333,13 +333,13 @@ def create_excel(meeting_name, use_cases_data, output_path):
         c.alignment = Alignment(horizontal="center", vertical="center")
         ws.row_dimensions[row].height = height
 
-    # Cabeçalho — 20 colunas (A–T)
+    # Cabeçalho — 21 colunas (A–U)
     headers = ["ID", "Grupo", "Caso de Uso", "User Story", "Detalhes / Solução",
                "Critérios de Aceite", "Sugestão Técnica", "Hub / Licença",
                "Status", "Responsável", "Shirt", "Horas", "MoSCoW", "Início", "Fim",
-               "Lista ou ID", "Título", "Descrição (contexto)", "Responsável (Assignee)", "Status (tarefa)"]
+               "Lista ou ID", "Título", "Descrição (contexto)", "Responsável (Assignee)", "Status (tarefa)", "Sprint"]
     special = {"Sugestão Técnica": ("FFF2CC", "1F4E79"), "Hub / Licença": ("E2EFDA", "1F4E79")}
-    task_cols = {"Lista ou ID", "Título", "Descrição (contexto)", "Responsável (Assignee)", "Status (tarefa)"}
+    task_cols = {"Lista ou ID", "Título", "Descrição (contexto)", "Responsável (Assignee)", "Status (tarefa)", "Sprint"}
     for ci, h in enumerate(headers, 1):
         cell = ws.cell(row=3, column=ci, value=h)
         if h in special:
@@ -373,14 +373,14 @@ def create_excel(meeting_name, use_cases_data, output_path):
             uc.get("sugestao_david",""), uc.get("hub_licenca",""),
             uc.get("status",""),         uc.get("responsavel",""),    uc.get("shirt_size",""),
             uc.get("horas",""),          uc.get("moscow",""),         uc.get("inicio",""), uc.get("fim",""),
-            "", "", "", "", ""
+            "", "", "", "", "", ""
         ]
         for ci, val in enumerate(vals, 1):
             cell = ws.cell(row=ri, column=ci, value=val)
             cell.font   = Font(name="Calibri", size=10, bold=(ci in [9, 13, 20]))
             cell.border = thin
             cell.alignment = Alignment(
-                horizontal="center" if ci in [1,9,10,11,12,13,14,15,16,19,20] else "left",
+                horizontal="center" if ci in [1,9,10,11,12,13,14,15,16,19,20,21] else "left",
                 vertical="center", wrap_text=True
             )
             if   ci == 7:  cell.fill = fills["david"]
@@ -395,7 +395,7 @@ def create_excel(meeting_name, use_cases_data, output_path):
         dv_moscow.add(ws.cell(row=ri, column=13))
         ws.row_dimensions[ri].height = 60
 
-    for i, w in enumerate([8,16,28,42,46,40,50,28,14,18,9,8,10,9,9,16,28,40,18,14], 1):
+    for i, w in enumerate([8,16,28,42,46,40,50,28,14,18,9,8,10,9,9,16,28,40,18,14,12], 1):
         ws.column_dimensions[get_column_letter(i)].width = w
 
     ws.freeze_panes = "A4"
@@ -447,6 +447,36 @@ def _infer_space_from_name(name):
         if space_name.lower() in name_lower:
             return space_id
     return None
+
+def create_subtasks(task_id, list_id, use_cases):
+    casos = use_cases.get("casos_de_uso", [])
+    created = []
+    for uc in casos:
+        desc = "\n".join([
+            f"**User Story:** {uc.get('user_story', '—')}",
+            f"\n**Detalhes:** {uc.get('detalhes', '—')}",
+            f"\n**Critérios de Aceite:**\n{uc.get('criterios_aceite', '—')}",
+            f"\n**Sugestão Técnica:** {uc.get('sugestao_david', '—')}",
+            f"**Hub / Licença:** {uc.get('hub_licenca', '—')}",
+            f"\n**Shirt:** {uc.get('shirt_size','—')}  |  **Horas:** {uc.get('horas','—')}  |  **MoSCoW:** {uc.get('moscow','—')}",
+            f"**Início:** {uc.get('inicio','—')}  |  **Fim:** {uc.get('fim','—')}  |  **Sprint:** {uc.get('sprint','—')}",
+        ])
+        payload = {
+            "name": f"{uc['id']} — {uc.get('caso_de_uso', '?')}",
+            "description": desc,
+            "status": "to do",
+            "parent": task_id,
+        }
+        if CLICKUP_USER_ID:
+            payload["assignees"] = [CLICKUP_USER_ID]
+        try:
+            sub = cu_post(f"/api/v2/list/{list_id}/task", payload)
+            log(f"  Subtarefa: {uc.get('id','?')} — {sub.get('url','?')}")
+            created.append(sub)
+        except Exception as e:
+            log(f"  AVISO: falha subtarefa {uc.get('id','?')} — {e}")
+    return created
+
 
 def process_meeting(doc):
     doc_id = doc["id"]
@@ -507,28 +537,21 @@ def process_meeting(doc):
                 uc["hub_licenca"]    = david.get("hub_licenca", "—")
                 log(f"  Recomendação -> {uc.get('id','?')}: ok")
 
-    safe_name = _RE_UNSAFE_CHARS.sub('_', name)
-    xlsx_name = f"{safe_name}_Use_Cases.xlsx"
-    xlsx_path = OUTPUT_DIR / xlsx_name
-    create_excel(name, use_cases, xlsx_path)
-    log(f"  Excel: {xlsx_path}")
-
     list_id = find_task_list(space_id)
     if not list_id:
         log("  ERRO: nenhuma lista de tarefas encontrada. Configure TASK_LISTS no .env.")
         return None
 
-    desc_lines = ["Casos de uso gerados automaticamente.\n"] + [
-        f"**{uc['id']} — {uc['caso_de_uso']}**\n"
-        f"  {uc.get('responsavel','—')} | {uc.get('horas','—')} | {uc.get('moscow','—')} | até {uc.get('fim','—')}"
+    desc_lines = ["Use Cases gerados automaticamente a partir da reunião.\n"] + [
+        f"• {uc['id']} — {uc.get('caso_de_uso','?')} [{uc.get('moscow','—')} | {uc.get('shirt_size','—')}]"
         for uc in use_cases.get("casos_de_uso", [])
     ]
 
     created_ms  = int(doc.get("date_created", 0))
     due_date_ms = extract_due_date_ms(name, fallback_ts_ms=created_ms)
     task_payload = {
-        "name": f"{name} - Use Cases",
-        "description": "\n\n".join(desc_lines),
+        "name": name,
+        "description": "\n".join(desc_lines),
         "status": "to do",
         "priority": 2,
         "notify_all": False,
@@ -548,11 +571,7 @@ def process_meeting(doc):
         log(f"  Erro ao criar tarefa: {e}")
         return None
 
-    try:
-        cu_attach(task_id, xlsx_path, xlsx_name)
-        log("  Excel anexado.")
-    except Exception as e:
-        log(f"  AVISO: falha ao anexar Excel — {e}")
+    create_subtasks(task_id, list_id, use_cases)
 
     return task_url
 
