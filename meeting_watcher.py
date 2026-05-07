@@ -51,8 +51,9 @@ TASK_LISTS = {
 }
 
 MEETING_KEYWORDS = [
-    "weekly", "discovery", "pds", "alinhamento",
-    "pedidos", "novo", "proposta", "projeto"
+    "projeto", "kick off", "kickoff", "discovery",
+    "novo cliente", "alinhamento", "demanda",
+    "pedido", "ajuste", "proposta",
 ]
 
 # ─── Constantes ───────────────────────────────────────────────────────────────
@@ -196,6 +197,15 @@ def is_meeting(doc_name):
     name_lower = doc_name.lower()
     return any(k in name_lower for k in MEETING_KEYWORDS)
 
+def _is_future_or_today(doc):
+    """Retorna True se a reunião for hoje ou no futuro."""
+    today_ms = int(datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).timestamp() * 1000)
+    date_ms = extract_due_date_ms(doc.get("name", ""))
+    if date_ms is not None:
+        return date_ms >= today_ms
+    created_ms = int(doc.get("date_created", 0))
+    return created_ms >= today_ms
+
 def get_new_meeting_docs(processed):
     new_docs, cursor = [], None
     while True:
@@ -210,7 +220,7 @@ def get_new_meeting_docs(processed):
         docs = data.get("docs", [])
         for doc in docs:
             doc_id = doc.get("id", "")
-            if doc_id not in processed and is_meeting(doc.get("name", "")):
+            if doc_id not in processed and is_meeting(doc.get("name", "")) and _is_future_or_today(doc):
                 new_docs.append(doc)
         cursor = data.get("next_cursor")
         if not cursor or not docs:
